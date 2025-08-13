@@ -1,0 +1,67 @@
+{
+  "teams": [
+    "SG-DevOps",
+    "SG-DataScience",
+    "SG-Platform",
+    "SG-Security",
+    "SG-LandingZone",
+    "SG-InnerSource",
+    "SG-Apps",
+    "SG-Everyone"
+  ],
+  "repositories": [
+    {
+      "name": "landing-zone-infrastructure",
+      "description": "Core landing zone infrastructure as code",
+      "visibility": "private",
+      "team_permissions": [
+        {
+          "team": "SG-LandingZone",
+          "permission": "admin"
+        },
+        {
+          "team": "SG-Platform",
+          "permission": "write"
+        },
+        {
+          "team": "SG-Security",
+          "permission": "read"
+        }
+      ]
+    },
+    {
+      "name": "inner-source-guidelines",
+      "description": "Inner source contribution guidelines and templates",
+      "visibility": "internal",
+      "team_permissions": [
+        {
+          "team": "SG-InnerSource",
+          "permission": "admin"
+        },
+        {
+          "team": "SG-DevOps",
+          "permission": "write"
+        }
+      ]
+    },
+    {
+      "name": "apps-deployment-pipeline",
+      "description": "Shared application deployment pipeline",
+      "visibility": "private",
+      "team_permissions": [
+        {
+          "team": "SG-Apps",
+          "permission": "admin"
+        },
+        {
+          "team": "SG-DevOps",
+          "permission": "admin"
+        },
+        {
+          "team": "SG-DataScience",
+          "permission": "read"
+        }
+      ]
+    }
+  ]
+}
