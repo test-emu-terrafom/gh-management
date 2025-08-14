@@ -3,11 +3,15 @@
 const fs = require('fs');
 const path = require('path');
 
-const configPath = path.join(__dirname, '../config/github-resources.json');
+// Check for test config first, then production config
+const testConfigPath = path.join(__dirname, '../config/test-resources.json');
+const prodConfigPath = path.join(__dirname, '../config/gh-resources.json');
+
+const configPath = fs.existsSync(testConfigPath) ? testConfigPath : prodConfigPath;
 
 try {
-  // Read and parse JSON
   const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+
   
   // Validate structure
   if (!config.teams || !Array.isArray(config.teams)) {
