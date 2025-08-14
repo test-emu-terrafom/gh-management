@@ -35,4 +35,12 @@ locals {
       }
     ]
   ])
+  
+  # Handle external groups conditionally
+  # In production (EMU): maps EntraID groups to GitHub external groups
+  # In testing: empty map since external groups don't exist
+  external_groups_map = var.enable_emu_features && length(data.github_organization_external_groups.all) > 0 ? {
+    for group in data.github_organization_external_groups.all[0].groups :
+    group.name => group
+  } : {}
 }
