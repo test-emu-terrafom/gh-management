@@ -99,7 +99,7 @@ jobs:
       
       # Don't apply in CI - just validate the plan works
       - name: Upload Plan
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-tfplan
           path: iac/tfplan
