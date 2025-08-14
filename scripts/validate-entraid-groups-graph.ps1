@@ -4,11 +4,32 @@ param(
     [string]$ConfigPath = "$PSScriptRoot/../config/github-resources.json"
 )
 
-# Use Azure CLI to get token for Graph API
-$token = az account get-access-token --resource https://graph.microsoft.com --query accessToken -o tsv
+# The Azure Login action sets these environment variables
+$tenantId = $env:AZURE_TENANT_ID
+$clientId = $env:AZURE_CLIENT_ID
+$clientSecret = $env:AZURE_CLIENT_SECRET
 
-if (!$token) {
-    Write-Error "Failed to get Graph API token. Ensure you're logged in with 'az login'"
+if (!$tenantId -or !$clientId -or !$clientSecret) {
+    Write-Error "Azure credentials not found in environment variables"
+    exit 1
+}
+
+Write-Host "Getting Graph API token..." -ForegroundColor Cyan
+
+# Get token directly using REST API
+$tokenUri = "https://login.microsoftonline.com/$tenantId/oauth2/v2.0/token"
+$body = @{
+    client_id     = $clientId
+    client_secret = $clientSecret
+    scope         = "https://graph.microsoft.com/.default"
+    grant_type    = "client_credentials"
+}
+
+try {
+    $tokenResponse = Invoke-RestMethod -Uri $tokenUri -Method Post -Body $body -ContentType "application/x-www-form-urlencoded"
+    $token = $tokenResponse.access_token
+} catch {
+    Write-Error "Failed to get Graph API token: $_"
     exit 1
 }
 
@@ -21,6 +42,7 @@ $headers = @{
     "Authorization" = "Bearer $token"
     "Content-Type" = "application/json"
 }
+
 
 $missingGroups = @()
 $foundGroups = @()

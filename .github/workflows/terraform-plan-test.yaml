@@ -25,6 +25,10 @@ jobs:
       #     cat config/test-resources.json
       - name: Validate EntraID Groups via Graph API
         shell: pwsh
+        env:
+          AZURE_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
         run: |
           ./scripts/validate-entraid-groups-graph.ps1 -ConfigPath ./config/test-resources.json
 

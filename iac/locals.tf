@@ -35,21 +35,8 @@ locals {
       }
     ]
   ])
-
-  simulated_external_groups = {
-    for team in local.config.teams : team => {
-      id   = "entraid-${substr(md5(team), 0, 8)}"  # Simulated ID
-      name = team
-      # In production, this would be the real external group ID from SCIM
-    }
-  }
   
-  # Handle external groups conditionally
-  # In production (EMU): maps EntraID groups to GitHub external groups
-  # In testing: empty map since external groups don't exist
-  # external_groups_map = var.enable_emu_features && length(data.github_organization_external_groups.all) > 0 ? {
-  #   for group in data.github_organization_external_groups.all[0].groups :
-  #   group.name => group
-  # } : {}
-  external_groups_map = var.enable_emu_features ? local.simulated_external_groups : {}
+  # For testing without EMU: simulate external groups
+  # In production, these would need to be handled differently
+  external_groups_map = {}
 }
