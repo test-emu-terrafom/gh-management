@@ -6,7 +6,7 @@ Validates that EntraID groups referenced in config exist in GitHub
 #>
 
 param(
-    [string]$ConfigPath = "$PSScriptRoot/../config/github-resources.json",
+    [string]$ConfigPath = "$PSScriptRoot/../config/test-resources.json",
     [string]$GitHubToken = $env:GITHUB_TOKEN
 )
 
