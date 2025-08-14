@@ -12,11 +12,11 @@
       "team_permissions": [
         {
           "team": "TestEngineering",
-          "permission": "write"
+          "permission": "push"
         },
         {
           "team": "TestSecurity",
-          "permission": "read"
+          "permission": "pull"
         }
       ]
     }

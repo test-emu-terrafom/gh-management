@@ -21,11 +21,11 @@
         },
         {
           "team": "SG-Platform",
-          "permission": "write"
+          "permission": "push"
         },
         {
           "team": "SG-Security",
-          "permission": "read"
+          "permission": "pull"
         }
       ]
     },
@@ -40,7 +40,7 @@
         },
         {
           "team": "SG-DevOps",
-          "permission": "write"
+          "permission": "push"
         }
       ]
     },
@@ -59,7 +59,7 @@
         },
         {
           "team": "SG-DataScience",
-          "permission": "read"
+          "permission": "pull"
         }
       ]
     }
