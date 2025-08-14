@@ -4,7 +4,7 @@ resource "github_team" "team" {
   privacy     = "closed"
   
   # Link to EntraID external group for EMU
-  parent_team_id = var.external_group_id
+  #parent_team_id = var.external_group_id
 
 }
 
