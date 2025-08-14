@@ -1,0 +1,24 @@
+{
+  "teams": [
+    "Engineering",
+    "Security",
+    "Platform"
+  ],
+  "repositories": [
+    {
+      "name": "test-app",
+      "description": "Test application",
+      "visibility": "private",
+      "team_permissions": [
+        {
+          "team": "Engineering",
+          "permission": "write"
+        },
+        {
+          "team": "Security",
+          "permission": "read"
+        }
+      ]
+    }
+  ]
+}

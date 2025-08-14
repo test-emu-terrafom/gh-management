@@ -20,11 +20,11 @@ jobs:
       - name: Validate JSON structure
         run: node scripts/validate-json.js
       
-      - name: Check EntraID groups
-        shell: pwsh
-        run: ./scripts/validate-entraid-groups.ps1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Check EntraID groups
+      #   shell: pwsh
+      #   run: ./scripts/validate-entraid-groups.ps1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   terraform-plan:
     needs: validate

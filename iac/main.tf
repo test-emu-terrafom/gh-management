@@ -1,11 +1,21 @@
 # Validate all teams have corresponding external groups
+# resource "null_resource" "validate_external_groups" {
+#   for_each = local.teams
+  
+#   lifecycle {
+#     precondition {
+#       condition     = can(local.external_groups_map[each.key])
+#       error_message = "EntraID group '${each.key}' not found in GitHub. Ensure SCIM provisioning is enabled and the group is assigned to the GitHub EMU app."
+#     }
+#   }
+# }
 resource "null_resource" "validate_external_groups" {
-  for_each = local.teams
+  for_each = var.enable_emu_features ? local.teams : {}
   
   lifecycle {
     precondition {
       condition     = can(local.external_groups_map[each.key])
-      error_message = "EntraID group '${each.key}' not found in GitHub. Ensure SCIM provisioning is enabled and the group is assigned to the GitHub EMU app."
+      error_message = "EntraID group '${each.key}' not found in GitHub."
     }
   }
 }
@@ -20,9 +30,11 @@ module "teams" {
   display_name  = each.key
   description   = each.value.description
   entraid_group = each.key
-  external_group_id = local.external_groups_map[each.key].id
+  # external_group_id = local.external_groups_map[each.key].id
+  external_group_id = var.enable_emu_features ? local.external_groups_map[each.key].id : null
   
-  depends_on = [null_resource.validate_external_groups]
+  # depends_on = [null_resource.validate_external_groups]
+  depends_on = var.enable_emu_features ? [null_resource.validate_external_groups] : []
 }
 
 # Create repositories

@@ -5,6 +5,7 @@ resource "github_team" "team" {
   
   # Link to EntraID external group for EMU
   parent_team_id = var.external_group_id
+
 }
 
 # Optional: Create team settings

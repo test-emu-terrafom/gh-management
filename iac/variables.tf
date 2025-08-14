@@ -89,3 +89,10 @@ variable "enforce_admins" {
   type        = bool
   default     = true
 }
+
+
+variable "enable_emu_features" {
+  description = "Enable EMU-specific features (disable for testing)"
+  type        = bool
+  default     = true
+}
