@@ -68,24 +68,15 @@ jobs:
       - name: Terraform Plan
         working-directory: ./iac
         env:
-          ORGANIZATON: "test-emu-terraform"  # Or use a secret
-          TF_VAR_github_team_prefix: "GT-"
-          APP_ID: ${{ secrets.GITHUB_APP_ID }}
-          APP_INSTALLATION_ID: ${{ secrets.GITHUB_APP_INSTALLATION_ID }}
-          TF_VAR_github_app_pem_file: "../github-app.pem"  # File created in previous step
+          TF_VAR_github_organization: "test-emu-terrafom"
+          TF_VAR_github_team_prefix: "Team-"
+          TF_VAR_github_app_id: ${{ secrets.APP_ID }}
+          TF_VAR_github_app_installation_id: ${{ secrets.APP_INSTALLATION_ID }}
+          TF_VAR_github_app_pem_file: "../github-app.pem"
           TF_VAR_enable_emu_features: "false"
+          TF_VAR_everyone_team_enabled: "false"
         run: |
-          if [ "${{ github.event.pull_request.base.ref }}" == "develop" ]; then
-            # For testing, we know groups exist in Azure but not in GitHub
-            # So we skip EMU validation
-            terraform plan \
-              -var-file=../test/terraform.tfvars \
-              -var="enable_emu_features=false" \
-              -var="skip_external_group_validation=true" \
-              -out=tfplan -no-color | tee plan.txt
-          else
-            terraform plan -out=tfplan -no-color | tee plan.txt
-          fi
+          terraform plan -out=tfplan -no-color | tee plan.txt
             
       - name: Comment PR with Plan
         uses: actions/github-script@v7
