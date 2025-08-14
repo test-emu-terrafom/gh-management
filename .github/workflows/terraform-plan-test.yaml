@@ -33,10 +33,7 @@ jobs:
       - name: Azure Login
         uses: azure/login@v1
         with:
-          client-id: ${{ secrets.ARM_CLIENT_ID }}
-          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-          tenant-id: ${{ secrets.ARM_TENANT_ID }}
-          subscription-id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          creds: ${{ secrets.AZURE_CLIENT_SECRET }}
       
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
