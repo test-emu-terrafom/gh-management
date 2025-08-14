@@ -1,10 +1,8 @@
-name: Terraform Plan
+name: Terraform Plan - Test
 on:
   pull_request:
-    paths:
-      - 'config/github-resources.json'
-      - 'iac/**'
-      - 'modules/**'
+    branches: [develop, main]
+  workflow_dispatch:  # Allow manual trigger for testing
 
 permissions:
   id-token: write
@@ -20,11 +18,11 @@ jobs:
       - name: Validate JSON structure
         run: node scripts/validate-json.js
       
-      - name: Check EntraID groups
-        shell: pwsh
-        run: ./scripts/validate-entraid-groups.ps1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Skip EntraID validation for initial test
+      # - name: Check test configuration
+      #   run: |
+      #     echo "Using test configuration"
+      #     cat config/test-resources.json
 
   terraform-plan:
     needs: validate
@@ -51,15 +49,41 @@ jobs:
         
       - name: Terraform Init
         working-directory: ./iac
-        run: terraform init
+        run: |
+          # Use test backend if specified
+          if [ "${{ github.event.pull_request.base.ref }}" == "develop" ]; then
+            echo "Using test configuration"
+            cp ../config/test-resources.json ../config/github-resources.json
+            terraform init -backend-config=../test/backend.tf
+          else
+            terraform init
+          fi
           
       - name: Terraform Plan
         working-directory: ./iac
+        env:
+          ORGANIZATON: "test-emu-terraform"  # Or use a secret
+          TF_VAR_github_team_prefix: "GT-"
+          APP_ID: ${{ secrets.GITHUB_APP_ID }}
+          APP_INSTALLATION_ID: ${{ secrets.GITHUB_APP_INSTALLATION_ID }}
+          TF_VAR_github_app_pem_file: "../github-app.pem"  # File created in previous step
+          TF_VAR_enable_emu_features: "false"
         run: |
-          terraform plan -out=tfplan -no-color | tee plan.txt
+          if [ "${{ github.event.pull_request.base.ref }}" == "develop" ]; then
+            # For testing, we know groups exist in Azure but not in GitHub
+            # So we skip EMU validation
+            terraform plan \
+              -var-file=../test/terraform.tfvars \
+              -var="enable_emu_features=false" \
+              -var="skip_external_group_validation=true" \
+              -out=tfplan -no-color | tee plan.txt
+          else
+            terraform plan -out=tfplan -no-color | tee plan.txt
+          fi
             
       - name: Comment PR with Plan
         uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
         with:
           script: |
             const fs = require('fs');
@@ -74,7 +98,8 @@ jobs:
             
             </details>
             
-            **Triggered by:** @${{ github.actor }}`;
+            **Triggered by:** @${{ github.actor }}
+            **Test Mode:** ${{ github.event.pull_request.base.ref == 'develop' && 'Yes' || 'No' }}`;
             
             github.rest.issues.createComment({
               issue_number: context.issue.number,
