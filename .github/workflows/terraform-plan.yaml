@@ -56,14 +56,7 @@ jobs:
       - name: Terraform Init
         working-directory: ./iac
         run: |
-          # Use test backend if specified
-          if [ "${{ github.event.pull_request.base.ref }}" == "develop" ]; then
-            echo "Using test configuration"
-            cp ../config/test-resources.json ../config/github-resources.json
-            terraform init -backend-config=../test/backend.tf
-          else
-            terraform init
-          fi
+          terraform init
           
       - name: Terraform Plan
         working-directory: ./iac
