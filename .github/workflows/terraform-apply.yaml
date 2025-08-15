@@ -29,6 +29,32 @@ jobs:
         run: |
           echo "${{ secrets.APP_PRIVATE_KEY }}" | base64 -d > github-app.pem
           chmod 600 github-app.pem
+      
+      - name: Debug PEM Content
+        run: |
+          echo "=== PEM File Debug ==="
+          echo "File exists: $([ -f github-app.pem ] && echo 'yes' || echo 'no')"
+          echo "File size: $(wc -c < github-app.pem) bytes"
+          
+          echo "=== Check PEM Format ==="
+          if head -n 1 github-app.pem | grep -q "BEGIN RSA PRIVATE KEY"; then
+            echo "✓ Valid PEM header"
+          else
+            echo "✗ Invalid PEM header"
+            echo "First line: $(head -n 1 github-app.pem)"
+          fi
+          
+          echo "=== Verify with OpenSSL ==="
+          if openssl rsa -in github-app.pem -check -noout 2>/dev/null; then
+            echo "✓ Valid RSA key"
+          else
+            echo "✗ Invalid RSA key"
+            openssl rsa -in github-app.pem -check 2>&1 | head -5
+          fi
+          
+          echo "=== File location ==="
+          pwd
+          ls -la github-app.pem
 
       - name: Clean Terraform
         working-directory: ./iac
