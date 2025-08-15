@@ -35,4 +35,8 @@ locals {
       }
     ]
   ])
+  
+  # For testing without EMU: simulate external groups
+  # In production, these would need to be handled differently
+  external_groups_map = {}
 }

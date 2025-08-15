@@ -1,22 +1,22 @@
 {
   "teams": [
-    "Engineering",
-    "Security",
-    "Platform"
+    "TestEngineering",
+    "TestSecurity", 
+    "TestPlatform"
   ],
   "repositories": [
     {
-      "name": "test-app",
-      "description": "Test application",
+      "name": "test-app-repo",
+      "description": "Test application repository",
       "visibility": "private",
       "team_permissions": [
         {
-          "team": "Engineering",
-          "permission": "write"
+          "team": "TestEngineering",
+          "permission": "push"
         },
         {
-          "team": "Security",
-          "permission": "read"
+          "team": "TestSecurity",
+          "permission": "pull"
         }
       ]
     }

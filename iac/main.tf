@@ -34,7 +34,7 @@ module "teams" {
   external_group_id = var.enable_emu_features ? local.external_groups_map[each.key].id : null
   
   # depends_on = [null_resource.validate_external_groups]
-  depends_on = var.enable_emu_features ? [null_resource.validate_external_groups] : []
+  depends_on = [null_resource.validate_external_groups]
 }
 
 # Create repositories

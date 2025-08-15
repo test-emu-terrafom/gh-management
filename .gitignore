@@ -5,6 +5,9 @@
 .terraform/
 .terraform.lock.hcl
 
+#environment files
+.env
+
 # Credentials - NEVER commit these
 *.pem
 *.pfx

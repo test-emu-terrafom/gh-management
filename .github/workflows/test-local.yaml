@@ -1,13 +1,6 @@
 name: Test Workflow (Local Testing)
 on:
   workflow_dispatch:  # Manual trigger
-  pull_request:
-    branches: [test, develop]  # Only on test branches
-    paths:
-      - 'test/**'
-      - 'config/test-resources.json'
-      - 'modules/**'
-      - 'iac/**'
 
 env:
   TF_VERSION: '1.5.0'
@@ -99,7 +92,7 @@ jobs:
       
       # Don't apply in CI - just validate the plan works
       - name: Upload Plan
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-tfplan
           path: iac/tfplan

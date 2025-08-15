@@ -1,0 +1,10 @@
+# Production values - copy to terraform.tfvars
+github_organization         = "your-production-org"
+github_team_prefix         = "GitHubUsers-"
+github_app_id              = "prod-app-id"
+github_app_installation_id = "prod-installation-id"
+github_app_pem_file        = "/secrets/github-app.pem"
+
+# Production settings
+everyone_team_enabled = true
+everyone_team_name    = "SG-Everyone"
