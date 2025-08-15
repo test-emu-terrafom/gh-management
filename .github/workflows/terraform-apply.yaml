@@ -64,9 +64,28 @@ jobs:
       
       - name: Generate Summary
         working-directory: ./iac
+        env:
+          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
         run: |
           echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
-          echo "✅ Terraform apply completed successfully" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Resources Created/Updated:" >> $GITHUB_STEP_SUMMARY
-          terraform output -json | jq -r 'to_entries[] | "- **\(.key)**: \(.value.value)"' >> $GITHUB_STEP_SUMMARY
+          
+          if [ -f terraform.tfstate ]; then
+            echo "✅ Terraform apply completed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### Resources Created/Updated:" >> $GITHUB_STEP_SUMMARY
+            
+            # Get outputs safely
+            terraform output -json > outputs.json 2>/dev/null || echo "{}" > outputs.json
+            
+            # Parse only if valid JSON
+            if jq empty outputs.json 2>/dev/null; then
+              jq -r 'to_entries[] | "- **\(.key)**: \(.value.value)"' outputs.json >> $GITHUB_STEP_SUMMARY
+            else
+              echo "- Unable to parse outputs" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "❌ Terraform apply failed" >> $GITHUB_STEP_SUMMARY
+          fi
