@@ -2,10 +2,7 @@ name: Terraform Apply
 on:
   push:
     branches: [develop, main]
-    paths:
-      - 'config/github-resources.json'
-      - 'iac/**'
-      - 'modules/**'
+  workflow_dispatch:
 
 permissions:
   id-token: write
