@@ -69,7 +69,7 @@ variable "require_pr_reviews" {
 variable "required_approving_reviews" {
   description = "Number of required approving reviews"
   type        = number
-  default     = 2
+  default     = 1
 }
 
 variable "dismiss_stale_reviews" {
