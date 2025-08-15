@@ -35,7 +35,19 @@ jobs:
         run: |
           terraform init -reconfigure \
             -backend-config=../test/backend.tf
-          
+      
+      - name: Debug Variables
+        working-directory: ./iac
+        run: |
+          echo "GitHub Org: $TF_VAR_github_organization"
+          echo "App ID exists: ${{ secrets.APP_ID }}"
+          echo "App Installation ID exists: ${{ secrets.APP_INSTALLATION_ID }}"
+          echo "PEM file exists: $([ -f ../github-app.pem ] && echo 'yes' || echo 'no')"
+          echo "Current directory: $(pwd)"
+          ls -la ../
+        env:
+          TF_VAR_github_organization: "test-emu-terrafom"
+
       - name: Terraform Apply
         working-directory: ./iac
         env:
