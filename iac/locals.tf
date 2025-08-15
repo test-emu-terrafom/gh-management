@@ -1,6 +1,6 @@
 locals {
   # Parse JSON configuration
-  config = jsondecode(file("${path.module}/../config/github-resources.json"))
+  config = jsondecode(file("${path.module}/../config/test-resources.json"))
   
   # Transform teams list with GitHub naming convention
   teams = {
