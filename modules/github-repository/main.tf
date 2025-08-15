@@ -16,14 +16,14 @@ resource "github_repository" "repo" {
   
   vulnerability_alerts   = true
   
-  security_and_analysis {
-    secret_scanning {
-      status = "enabled"
-    }
-    secret_scanning_push_protection {
-      status = "enabled"
-    }
-  }
+  # security_and_analysis {
+  #   secret_scanning {
+  #     status = "enabled"
+  #   }
+  #   secret_scanning_push_protection {
+  #     status = "enabled"
+  #   }
+  # }
 }
 
 resource "github_branch_protection" "main" {
