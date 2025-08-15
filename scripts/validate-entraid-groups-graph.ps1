@@ -56,19 +56,31 @@ foreach ($groupName in $config.teams) {
     try {
         $response = Invoke-RestMethod -Uri $uri -Headers $headers -Method Get
         
+        # Replace the member count section with this:
         if ($response.value.Count -gt 0) {
             $group = $response.value[0]
             Write-Host "✓ Found: $groupName (ID: $($group.id))" -ForegroundColor Green
             
-            # Get member count
-            $membersUri = "https://graph.microsoft.com/v1.0/groups/$($group.id)/members/`$count"
-            $memberCount = Invoke-RestMethod -Uri $membersUri -Headers $headers -Method Get
-            Write-Host "  Members: $memberCount" -ForegroundColor Gray
+            # Fix: Add ConsistencyLevel header for count
+            $countHeaders = @{
+                "Authorization" = "Bearer $token"
+                "ConsistencyLevel" = "eventual"
+            }
+            
+            try {
+                # Get member count with proper header
+                $membersUri = "https://graph.microsoft.com/v1.0/groups/$($group.id)/members/`$count"
+                $memberCount = Invoke-RestMethod -Uri $membersUri -Headers $countHeaders -Method Get
+                Write-Host "  Members: $memberCount" -ForegroundColor Gray
+            } catch {
+                # If count fails, just skip it - group exists which is what matters
+                Write-Host "  Members: (count unavailable)" -ForegroundColor Gray
+            }
             
             $foundGroups += @{
                 Name = $groupName
                 Id = $group.id
-                MemberCount = $memberCount
+                MemberCount = if ($memberCount) { $memberCount } else { "N/A" }
             }
         } else {
             Write-Host "✗ Not found: $groupName" -ForegroundColor Red
