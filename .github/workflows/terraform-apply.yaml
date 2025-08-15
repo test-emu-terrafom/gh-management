@@ -42,6 +42,30 @@ jobs:
           terraform init -reconfigure \
             -backend-config=../test/backend.tf
       
+      - name: Debug GitHub Provider Values
+        working-directory: ./iac
+        env:
+          TF_VAR_github_organization: "test-emu-terrafom"
+          TF_VAR_github_team_prefix: "GH-"
+          TF_VAR_github_app_id: ${{ secrets.APP_ID }}
+          TF_VAR_github_app_installation_id: ${{ secrets.APP_INSTALLATION_ID }}
+          TF_VAR_github_app_pem_file: "../github-app.pem"
+          TF_VAR_enable_emu_features: "false"
+          TF_VAR_everyone_team_enabled: "false"
+          TF_LOG: DEBUG  # Enable Terraform debug logging
+          GITHUB_TOKEN: ""  # Make sure no token is interfering
+        run: |
+          echo "=== Checking actual values ==="
+          echo "Organization should be: test-emu-terrafom"
+          echo "App ID from secret: ${{ secrets.APP_ID }}"
+          echo "PEM exists: $([ -f ../github-app.pem ] && echo 'yes' || echo 'no')"
+          
+          # Test if provider can authenticate
+          terraform console << 'EOF'
+          var.github_organization
+          var.github_app_id
+          EOF
+      
       - name: Terraform Apply
         working-directory: ./iac
         env:
