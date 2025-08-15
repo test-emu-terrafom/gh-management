@@ -29,6 +29,12 @@ jobs:
         run: |
           echo "${{ secrets.GITHUB_APP_PRIVATE_KEY }}" | base64 -d > github-app.pem
           chmod 600 github-app.pem
+
+      - name: Clean Terraform
+        working-directory: ./iac
+        run: |
+          rm -rf .terraform
+          rm -f .terraform.lock.hcl
         
       - name: Terraform Init
         working-directory: ./iac
@@ -36,17 +42,36 @@ jobs:
           terraform init -reconfigure \
             -backend-config=../test/backend.tf
       
-      - name: Debug Variables
+      - name: Debug Provider Configuration
         working-directory: ./iac
         run: |
-          echo "GitHub Org: $TF_VAR_github_organization"
-          echo "App ID exists: ${{ secrets.APP_ID }}"
-          echo "App Installation ID exists: ${{ secrets.APP_INSTALLATION_ID }}"
-          echo "PEM file exists: $([ -f ../github-app.pem ] && echo 'yes' || echo 'no')"
-          echo "Current directory: $(pwd)"
+          echo "=== Current Directory ==="
+          pwd
+          
+          echo "=== Environment Variables ==="
+          env | grep TF_VAR_ || echo "No TF_VAR_ variables found"
+          
+          echo "=== Files ==="
           ls -la ../
-        env:
-          TF_VAR_github_organization: "test-emu-terrafom"
+          ls -la ../test/ || echo "No test directory"
+          
+          echo "=== Terraform Provider Debug ==="
+          terraform providers
+          
+          echo "=== Test Variables ==="
+          cat > test-vars.tf << 'EOF'
+          output "test_org" {
+            value = var.github_organization
+          }
+          output "test_app_id" {
+            value = var.github_app_id
+          }
+          output "test_pem_path" {
+            value = var.github_app_pem_file
+          }
+          EOF
+          
+          terraform apply -auto-approve -target=output.test_org -target=output.test_app_id -target=output.test_pem_path
 
       - name: Terraform Apply
         working-directory: ./iac

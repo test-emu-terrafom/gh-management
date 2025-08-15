@@ -6,7 +6,7 @@ variable "github_organization" {
 variable "github_team_prefix" {
   description = "Prefix for GitHub team names"
   type        = string
-  default     = "GitHubUsers-"
+  default     = "GH-"
 }
 
 variable "github_app_id" {
