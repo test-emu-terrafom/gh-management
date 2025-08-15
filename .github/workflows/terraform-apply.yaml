@@ -30,32 +30,6 @@ jobs:
           echo "${{ secrets.APP_PRIVATE_KEY }}" | base64 -d > github-app.pem
           chmod 600 github-app.pem
       
-      - name: Debug PEM Content
-        run: |
-          echo "=== PEM File Debug ==="
-          echo "File exists: $([ -f github-app.pem ] && echo 'yes' || echo 'no')"
-          echo "File size: $(wc -c < github-app.pem) bytes"
-          
-          echo "=== Check PEM Format ==="
-          if head -n 1 github-app.pem | grep -q "BEGIN RSA PRIVATE KEY"; then
-            echo "✓ Valid PEM header"
-          else
-            echo "✗ Invalid PEM header"
-            echo "First line: $(head -n 1 github-app.pem)"
-          fi
-          
-          echo "=== Verify with OpenSSL ==="
-          if openssl rsa -in github-app.pem -check -noout 2>/dev/null; then
-            echo "✓ Valid RSA key"
-          else
-            echo "✗ Invalid RSA key"
-            openssl rsa -in github-app.pem -check 2>&1 | head -5
-          fi
-          
-          echo "=== File location ==="
-          pwd
-          ls -la github-app.pem
-
       - name: Clean Terraform
         working-directory: ./iac
         run: |
@@ -66,37 +40,6 @@ jobs:
         working-directory: ./iac
         run: |
           terraform init
-      
-      - name: Debug GitHub Provider Values
-        working-directory: ./iac
-        env:
-          TF_VAR_github_organization: "test-emu-terrafom"
-          TF_VAR_github_team_prefix: "GH-"
-          TF_VAR_github_app_id: ${{ secrets.APP_ID }}
-          TF_VAR_github_app_installation_id: ${{ secrets.APP_INSTALLATION_ID }}
-          TF_VAR_github_app_pem_file: "../github-app.pem"
-          TF_VAR_enable_emu_features: "false"
-          TF_VAR_everyone_team_enabled: "false"
-        run: |
-          echo "=== Environment Check ==="
-          echo "Variables set: $(env | grep -c TF_VAR_)"
-          echo "Organization: $TF_VAR_github_organization"
-          echo "App ID exists: $([ -n "$TF_VAR_github_app_id" ] && echo 'yes' || echo 'no')"
-          echo "PEM path: $TF_VAR_github_app_pem_file"
-          
-          echo "=== File Check ==="
-          if [ -f "../github-app.pem" ]; then
-            echo "✓ PEM file exists"
-            echo "PEM file size: $(wc -c < ../github-app.pem) bytes"
-          else
-            echo "✗ PEM file not found!"
-            exit 1
-          fi
-          
-          echo "=== Provider Check ==="
-          terraform providers
-          
-          echo "=== Ready for apply ==="
       
       - name: Terraform Apply
         working-directory: ./iac
