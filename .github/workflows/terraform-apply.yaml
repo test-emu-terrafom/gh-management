@@ -24,10 +24,17 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.5.0
+      
+      - name: Prepare GitHub App Key
+        run: |
+          echo "${{ secrets.GITHUB_APP_PRIVATE_KEY }}" | base64 -d > github-app.pem
+          chmod 600 github-app.pem
         
       - name: Terraform Init
         working-directory: ./iac
-        run: terraform init
+        run: |
+          terraform init -reconfigure \
+            -backend-config=../test/backend.tf
           
       - name: Terraform Apply
         working-directory: ./iac
