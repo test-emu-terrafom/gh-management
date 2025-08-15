@@ -42,45 +42,6 @@ jobs:
           terraform init -reconfigure \
             -backend-config=../test/backend.tf
       
-      - name: Debug Provider Configuration
-        working-directory: ./iac
-        env:
-          TF_VAR_github_organization: "test-emu-terrafom"
-          TF_VAR_github_team_prefix: "GH-"
-          TF_VAR_github_app_id: ${{ secrets.APP_ID }}
-          TF_VAR_github_app_installation_id: ${{ secrets.APP_INSTALLATION_ID }}
-          TF_VAR_github_app_pem_file: "../github-app.pem"
-          TF_VAR_enable_emu_features: "false"
-          TF_VAR_everyone_team_enabled: "false"
-        run: |
-          echo "=== Current Directory ==="
-          pwd
-          
-          echo "=== Environment Variables ==="
-          env | grep TF_VAR_ || echo "No TF_VAR_ variables found"
-          
-          echo "=== Files ==="
-          ls -la ../
-          ls -la ../test/ || echo "No test directory"
-          
-          echo "=== Terraform Provider Debug ==="
-          terraform providers
-          
-          echo "=== Test Variables ==="
-          cat > test-vars.tf << 'EOF'
-          output "test_org" {
-            value = var.github_organization
-          }
-          output "test_app_id" {
-            value = var.github_app_id
-          }
-          output "test_pem_path" {
-            value = var.github_app_pem_file
-          }
-          EOF
-          
-          terraform apply -auto-approve -target=output.test_org -target=output.test_app_id -target=output.test_pem_path
-
       - name: Terraform Apply
         working-directory: ./iac
         env:
